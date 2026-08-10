@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- This page is the mobile control interface for Jarvis. -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JARVIS MOBILE CONTROL</title>
+    <style>
+        body {
+            background-color: #050505;
+            color: #00ffff;
+            font-family: 'Courier New', monospace;
+            text-align: center;
+            padding: 20px;
+            margin: 0;
+        }
+        h1 {
+            text-shadow: 0 0 10px #00ffff;
+            margin-top: 20px;
+        }
+        .subtitle { color: #888; margin-bottom: 30px; }
+        .btn {
+            display: block;
+            width: 90%;
+            max-width: 400px;
+            margin: 15px auto;
+            padding: 25px;
+            font-size: 18px;
+            font-weight: bold;
+            background: #00ffff;
+            color: #000;
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 0 20px #00ffff;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .btn:active {
+            background: #ff0066;
+            box-shadow: 0 0 20px #ff0066;
+            color: white;
+            transform: scale(0.95);
+        }
+        .morning {
+            background: #ff0066;
+            color: white;
+            box-shadow: 0 0 20px #ff0066;
+        }
+        .ask-box {
+            width: 90%;
+            max-width: 400px;
+            margin: 25px auto 10px auto;
+        }
+        .ask-input {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 15px;
+            font-size: 16px;
+            border-radius: 10px;
+            border: 2px solid #00ffff;
+            background: #0a0a0a;
+            color: #00ffff;
+            margin-bottom: 12px;
+        }
+        .ask-btn {
+            background: #00ff88;
+            box-shadow: 0 0 20px #00ff88;
+        }
+    </style>
+</head>
+<body>
+    <h1>🤖 JARVIS OS</h1>
+    <p class="subtitle">Mobile Command Center</p>
+
+    <!-- These buttons call the send() function with a fixed action. -->
+    <button class="btn" onclick="send('youtube')">📺 OPEN YOUTUBE</button>
+    <button class="btn" onclick="send('google')">🌐 OPEN GOOGLE</button>
+    <button class="btn" onclick="send('calculator')">🧮 OPEN CALCULATOR</button>
+    <button class="btn morning" onclick="send('morning')">☀️ GOOD MORNING SIR</button>
+
+    <div class="ask-box">
+        <input type="text" id="askInput" class="ask-input" placeholder="Type anything, any language...">
+        <button class="btn ask-btn" onclick="ask()">🧠 ASK JARVIS</button>
+    </div>
+
+    <script>
+        // send() is called when a fixed command button is pressed.
+        // It sends the chosen action to the back-end command route.
+        function send(action) {
+            fetch('/command/' + action)
+                .then(response => response.json())
+                .then(data => {
+                    alert(data.reply);
+                });
+        }
+
+        // ask() is called when the user submits a free-text query.
+        // It reads the input value, sends it to the back-end /ask endpoint,
+        // and then shows the assistant's reply in an alert.
+        function ask() {
+            const input = document.getElementById('askInput');
+            const query = input.value.trim();
+            if (!query) return;
+
+            fetch('/ask', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ query: query })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    alert(data.reply);
+                    input.value = '';
+                });
+        }
+    </script>
+</body>
+</html>
